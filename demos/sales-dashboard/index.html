@@ -1,242 +1,834 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sales Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard - Interactive Filters</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      padding: 2rem;
-    }
-    .container {
-      max-width: 1400px;
-      margin: auto;
-      background: #fff;
-      border-radius: 20px;
-      padding: 2rem;
-    }
-    h1 { margin-bottom: .25rem; }
-    .subtitle { color: #718096; margin-bottom: 1.5rem; }
+        h1 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
 
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .kpi-card {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      padding: 1.25rem;
-      border-radius: 12px;
-    }
-    .kpi-label { font-size: .8rem; opacity: .85; }
-    .kpi-value { font-size: 1.8rem; font-weight: 700; }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 1.5rem;
+        }
 
-    .chart-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .chart-card {
-      background: #f7fafc;
-      border-radius: 12px;
-      padding: 1rem;
-      border: 1px solid #e2e8f0;
-    }
-    .chart-title { font-weight: 600; margin-bottom: .75rem; }
+        /* Filter Section */
+        .filter-section {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: .75rem;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    thead { background: #667eea; color: #fff; }
+        .filter-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .filters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-    label { font-size: .8rem; }
-    input, select {
-      width: 100%;
-      padding: .4rem;
-    }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
 
-    canvas { max-height: 280px; }
-  </style>
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f7fafc;
+        }
+
+        /* Active Filter Tags */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .filter-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .kpi-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-change {
+            font-size: 0.875rem;
+            opacity: 0.85;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-card {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tbody tr:hover {
+            background: #edf2f7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #718096;
+            font-size: 1.125rem;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-value {
+                font-size: 1.5rem;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
-  <h1>📊 Sales Dashboard</h1>
-  <p class="subtitle">Live CSV • Client-ready demo</p>
+    <div class="container">
+        <h1>📊 Sales Performance Dashboard</h1>
+        <p class="subtitle">Interactive analytics with real-time filtering</p>
 
-  <div id="dashboard" style="display:none">
+        <div id="error-message" class="error" style="display: none;"></div>
+        <div id="loading" class="loading">Loading data...</div>
 
-    <!-- FILTERS -->
-    <div class="chart-card" style="margin-bottom:1.5rem">
-      <div class="chart-title">Filters</div>
-      <div class="filters">
-        <div>
-          <label>Date from</label>
-          <input type="date" id="f-date-from">
+        <div id="dashboard" style="display: none;">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-title">
+                    🔍 Filter Data
+                </div>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="dateFrom">From Date</label>
+                        <input type="date" id="dateFrom">
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateTo">To Date</label>
+                        <input type="date" id="dateTo">
+                    </div>
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category</label>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="productFilter">Product</label>
+                        <select id="productFilter">
+                            <option value="">All Products</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-buttons">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset All</button>
+                </div>
+                <div class="active-filters" id="activeFilters"></div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value" id="total-revenue">-</div>
+                    <div class="kpi-change" id="revenue-info">-</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Transactions</div>
+                    <div class="kpi-value" id="total-transactions">-</div>
+                    <div class="kpi-change">Orders processed</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg Transaction Value</div>
+                    <div class="kpi-value" id="avg-value">-</div>
+                    <div class="kpi-change">Per order</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Top Category</div>
+                    <div class="kpi-value" id="top-category">-</div>
+                    <div class="kpi-change" id="category-percentage">-</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Monthly Revenue Trend</div>
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Revenue by Category</div>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Products Table -->
+            <div class="table-container">
+                <div class="chart-title">Top 10 Products by Revenue</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Units Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div>
-          <label>Date to</label>
-          <input type="date" id="f-date-to">
-        </div>
-        <div>
-          <label>Category</label>
-          <select id="f-category"><option value="">All</option></select>
-        </div>
-        <div>
-          <label>Product</label>
-          <select id="f-product"><option value="">All</option></select>
-        </div>
-      </div>
     </div>
 
-    <!-- KPI -->
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="kpi-value" id="k-rev">-</div></div>
-      <div class="kpi-card"><div class="kpi-label">Transactions</div><div class="kpi-value" id="k-tx">-</div></div>
-      <div class="kpi-card"><div class="kpi-label">Avg Value</div><div class="kpi-value" id="k-avg">-</div></div>
-      <div class="kpi-card"><div class="kpi-label">Top Category</div><div class="kpi-value" id="k-cat">-</div></div>
-    </div>
+    <script>
+        // Configuration: Point to your CSV file
+        const CSV_FILE = 'sample_sales_data.csv'; // Change this to your actual CSV file path
 
-    <!-- CHARTS -->
-    <div class="chart-grid">
-      <div class="chart-card">
-        <div class="chart-title">Monthly Revenue</div>
-        <canvas id="monthlyChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">By Category</div>
-        <canvas id="categoryChart"></canvas>
-      </div>
-    </div>
+        // Global variables
+        let allData = [];
+        let filteredData = [];
+        let monthlyChart, categoryChart;
+        let currentFilters = {
+            dateFrom: null,
+            dateTo: null,
+            category: null,
+            product: null
+        };
 
-    <!-- TABLE -->
-    <div class="chart-card">
-      <div class="chart-title">Top Products</div>
-      <table>
-        <thead>
-          <tr><th>#</th><th>Product</th><th>Category</th><th>Units</th><th>Revenue</th></tr>
-        </thead>
-        <tbody id="tbl"></tbody>
-      </table>
-    </div>
+        // Format currency in Indonesian Rupiah
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
 
-  </div>
-</div>
+        // Format number with thousand separators
+        function formatNumber(value) {
+            return new Intl.NumberFormat('id-ID').format(value);
+        }
 
-<script>
-const CSV_FILE = 'sample_sales_data.csv';
-let rawData = [];
-let filtered = [];
-let monthlyChart, categoryChart;
+        // Load and parse CSV data
+        function loadData() {
+            Papa.parse(CSV_FILE, {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    console.log('CSV loaded successfully:', results.data.length, 'rows');
+                    allData = results.data.filter(row => row.TotalHarga); // Remove empty rows
+                    filteredData = [...allData];
+                    
+                    // Initialize filters
+                    populateFilterOptions();
+                    setDefaultDateRange();
+                    
+                    // Update dashboard
+                    updateDashboard();
+                    
+                    // Show dashboard
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                },
+                error: function(error) {
+                    showError('Failed to load CSV: ' + error.message);
+                }
+            });
+        }
 
-const money = v => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(v);
-const num = v => new Intl.NumberFormat('id-ID').format(v);
+        // Populate filter dropdowns
+        function populateFilterOptions() {
+            // Get unique categories
+            const categories = [...new Set(allData.map(row => row.Category))].sort();
+            const categorySelect = document.getElementById('categoryFilter');
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
 
-Papa.parse(CSV_FILE,{
-  download:true,
-  header:true,
-  dynamicTyping:true,
-  complete:r=>{
-    rawData = r.data.filter(d=>d.TotalHarga && d.OrderDate);
-    setupFilters();
-    applyFilters();
-    document.getElementById('dashboard').style.display='block';
-  }
-});
+            // Get unique products
+            const products = [...new Set(allData.map(row => row.ProductName))].sort();
+            const productSelect = document.getElementById('productFilter');
+            products.forEach(prod => {
+                const option = document.createElement('option');
+                option.value = prod;
+                option.textContent = prod;
+                productSelect.appendChild(option);
+            });
+        }
 
-function setupFilters(){
-  const cats=[...new Set(rawData.map(d=>d.Category))];
-  const prods=[...new Set(rawData.map(d=>d.ProductName))];
-  cats.forEach(v=>f-category.add(new Option(v,v)));
-  prods.forEach(v=>f-product.add(new Option(v,v)));
-  document.querySelectorAll('input,select').forEach(e=>e.onchange=applyFilters);
-}
+        // Set default date range (all available dates)
+        function setDefaultDateRange() {
+            const dates = allData.map(row => new Date(row.OrderDate));
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+            
+            document.getElementById('dateFrom').value = minDate.toISOString().split('T')[0];
+            document.getElementById('dateTo').value = maxDate.toISOString().split('T')[0];
+        }
 
-function applyFilters(){
-  const df=f-date-from.value, dt=f-date-to.value, c=f-category.value, p=f-product.value;
-  filtered = rawData.filter(d=>{
-    const t=new Date(d.OrderDate);
-    if(df && t<new Date(df))return false;
-    if(dt && t>new Date(dt))return false;
-    if(c && d.Category!==c)return false;
-    if(p && d.ProductName!==p)return false;
-    return true;
-  });
-  render();
-}
+        // Apply filters
+        function applyFilters() {
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const category = document.getElementById('categoryFilter').value;
+            const product = document.getElementById('productFilter').value;
 
-function render(){
-  if(monthlyChart)monthlyChart.destroy();
-  if(categoryChart)categoryChart.destroy();
+            // Store current filters
+            currentFilters = {
+                dateFrom: dateFrom || null,
+                dateTo: dateTo || null,
+                category: category || null,
+                product: product || null
+            };
 
-  const rev=filtered.reduce((s,d)=>s+d.TotalHarga,0);
-  document.getElementById('k-rev').textContent=money(rev);
-  document.getElementById('k-tx').textContent=num(filtered.length);
-  document.getElementById('k-avg').textContent=money(rev/filtered.length||0);
+            // Filter data
+            filteredData = allData.filter(row => {
+                const orderDate = new Date(row.OrderDate);
+                const fromDate = dateFrom ? new Date(dateFrom) : null;
+                const toDate = dateTo ? new Date(dateTo) : null;
 
-  const byCat={};
-  filtered.forEach(d=>byCat[d.Category]=(byCat[d.Category]||0)+d.TotalHarga);
-  const topCat=Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('k-cat').textContent=topCat?topCat[0]:'-';
+                // Date filter
+                if (fromDate && orderDate < fromDate) return false;
+                if (toDate && orderDate > toDate) return false;
 
-  const byMonth={};
-  filtered.forEach(d=>{
-    const k=new Date(d.OrderDate).toLocaleDateString('id-ID',{month:'short',year:'numeric'});
-    byMonth[k]=(byMonth[k]||0)+d.TotalHarga;
-  });
+                // Category filter
+                if (category && row.Category !== category) return false;
 
-  monthlyChart=new Chart(monthlyChart.getContext('2d'),{
-    type:'bar',
-    data:{labels:Object.keys(byMonth),datasets:[{data:Object.values(byMonth)}]},
-    options:{plugins:{legend:{display:false}}}
-  });
+                // Product filter
+                if (product && row.ProductName !== product) return false;
 
-  categoryChart=new Chart(categoryChart.getContext('2d'),{
-    type:'doughnut',
-    data:{labels:Object.keys(byCat),datasets:[{data:Object.values(byCat)}]}
-  });
+                return true;
+            });
 
-  const prod={};
-  filtered.forEach(d=>{
-    prod[d.ProductName]=prod[d.ProductName]||{rev:0,qty:0,cat:d.Category};
-    prod[d.ProductName].rev+=d.TotalHarga;
-    prod[d.ProductName].qty+=d.Jumlah||0;
-  });
+            // Update active filter tags
+            updateActiveFilters();
 
-  tbl.innerHTML=Object.entries(prod)
-    .sort((a,b)=>b[1].rev-a[1].rev)
-    .slice(0,10)
-    .map((p,i)=>`
-      <tr>
-        <td>${i+1}</td>
-        <td>${p[0]}</td>
-        <td>${p[1].cat}</td>
-        <td>${num(p[1].qty)}</td>
-        <td>${money(p[1].rev)}</td>
-      </tr>`).join('');
-}
-</script>
+            // Update dashboard
+            updateDashboard();
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('productFilter').value = '';
+            setDefaultDateRange();
+            
+            currentFilters = {
+                dateFrom: null,
+                dateTo: null,
+                category: null,
+                product: null
+            };
+            
+            filteredData = [...allData];
+            updateActiveFilters();
+            updateDashboard();
+        }
+
+        // Update active filter tags
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            container.innerHTML = '';
+
+            if (currentFilters.category) {
+                container.innerHTML += `
+                    <div class="filter-tag">
+                        Category: ${currentFilters.category}
+                        <span class="remove" onclick="removeFilter('category')">✕</span>
+                    </div>
+                `;
+            }
+
+            if (currentFilters.product) {
+                container.innerHTML += `
+                    <div class="filter-tag">
+                        Product: ${currentFilters.product}
+                        <span class="remove" onclick="removeFilter('product')">✕</span>
+                    </div>
+                `;
+            }
+
+            if (currentFilters.dateFrom || currentFilters.dateTo) {
+                const dateText = `${currentFilters.dateFrom || 'Start'} to ${currentFilters.dateTo || 'End'}`;
+                container.innerHTML += `
+                    <div class="filter-tag">
+                        Date: ${dateText}
+                        <span class="remove" onclick="removeFilter('date')">✕</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Remove individual filter
+        function removeFilter(type) {
+            if (type === 'category') {
+                document.getElementById('categoryFilter').value = '';
+                currentFilters.category = null;
+            } else if (type === 'product') {
+                document.getElementById('productFilter').value = '';
+                currentFilters.product = null;
+            } else if (type === 'date') {
+                setDefaultDateRange();
+                currentFilters.dateFrom = null;
+                currentFilters.dateTo = null;
+            }
+            
+            applyFilters();
+        }
+
+        // Update entire dashboard
+        function updateDashboard() {
+            if (filteredData.length === 0) {
+                showNoData();
+                return;
+            }
+
+            updateKPIs();
+            updateCharts();
+            createProductTable();
+        }
+
+        // Show no data message
+        function showNoData() {
+            document.querySelector('.kpi-grid').innerHTML = '<div class="no-data">No data matches your filters. Try adjusting the criteria.</div>';
+            document.querySelector('.chart-grid').style.display = 'none';
+            document.querySelector('.table-container').style.display = 'none';
+        }
+
+        // Update KPI cards
+        function updateKPIs() {
+            const totalRevenue = filteredData.reduce((sum, row) => sum + (row.TotalHarga || 0), 0);
+            const totalTransactions = filteredData.length;
+            const avgValue = totalRevenue / totalTransactions;
+
+            // Category analysis
+            const categoryRevenue = {};
+            filteredData.forEach(row => {
+                const category = row.Category || 'Other';
+                categoryRevenue[category] = (categoryRevenue[category] || 0) + row.TotalHarga;
+            });
+
+            const topCategory = Object.entries(categoryRevenue)
+                .sort((a, b) => b[1] - a[1])[0];
+
+            // Update KPI cards
+            document.getElementById('total-revenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('total-transactions').textContent = formatNumber(totalTransactions);
+            document.getElementById('avg-value').textContent = formatCurrency(avgValue);
+            
+            if (topCategory) {
+                document.getElementById('top-category').textContent = topCategory[0];
+                document.getElementById('category-percentage').textContent = 
+                    ((topCategory[1] / totalRevenue) * 100).toFixed(1) + '% of total';
+            }
+
+            document.getElementById('revenue-info').textContent = 
+                `From ${totalTransactions} transactions`;
+
+            // Make sure chart and table containers are visible
+            document.querySelector('.chart-grid').style.display = 'grid';
+            document.querySelector('.table-container').style.display = 'block';
+        }
+
+        // Update all charts
+        function updateCharts() {
+            createMonthlyChart();
+            createCategoryChart();
+        }
+
+        // Create monthly trend chart
+        function createMonthlyChart() {
+            const monthlyData = {};
+            
+            filteredData.forEach(row => {
+                const date = new Date(row.OrderDate);
+                const monthYear = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short' });
+                monthlyData[monthYear] = (monthlyData[monthYear] || 0) + row.TotalHarga;
+            });
+
+            const sortedMonths = Object.entries(monthlyData)
+                .sort((a, b) => {
+                    const dateA = new Date(a[0]);
+                    const dateB = new Date(b[0]);
+                    return dateA - dateB;
+                });
+
+            // Destroy existing chart
+            if (monthlyChart) {
+                monthlyChart.destroy();
+            }
+
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            monthlyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedMonths.map(m => m[0]),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: sortedMonths.map(m => m[1]),
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + (value / 1000000).toFixed(0) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create category distribution chart
+        function createCategoryChart() {
+            const categoryRevenue = {};
+            filteredData.forEach(row => {
+                const category = row.Category || 'Other';
+                categoryRevenue[category] = (categoryRevenue[category] || 0) + row.TotalHarga;
+            });
+
+            const sortedCategories = Object.entries(categoryRevenue)
+                .sort((a, b) => b[1] - a[1]);
+
+            // Destroy existing chart
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: sortedCategories.map(c => c[0]),
+                    datasets: [{
+                        data: sortedCategories.map(c => c[1]),
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(237, 100, 166, 0.8)',
+                            'rgba(255, 154, 158, 0.8)',
+                            'rgba(250, 208, 196, 0.8)',
+                            'rgba(77, 171, 247, 0.8)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = formatCurrency(context.parsed);
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create top products table
+        function createProductTable() {
+            const productRevenue = {};
+            const productQuantity = {};
+            const productCategory = {};
+
+            filteredData.forEach(row => {
+                const product = row.ProductName || 'Unknown';
+                productRevenue[product] = (productRevenue[product] || 0) + row.TotalHarga;
+                productQuantity[product] = (productQuantity[product] || 0) + (row.Jumlah || 0);
+                productCategory[product] = row.Category || 'Other';
+            });
+
+            const topProducts = Object.entries(productRevenue)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const tableBody = document.getElementById('product-table');
+            
+            if (topProducts.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No products found</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = topProducts.map((product, index) => `
+                <tr>
+                    <td><strong>#${index + 1}</strong></td>
+                    <td>${product[0]}</td>
+                    <td>${productCategory[product[0]]}</td>
+                    <td>${formatNumber(productQuantity[product[0]])}</td>
+                    <td><strong>${formatCurrency(product[1])}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+        }
+
+        // Initialize dashboard
+        loadData();
+    </script>
 </body>
 </html>
