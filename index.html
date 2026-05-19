@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alva Andhika Sa'id — Data Analyst & Analytics Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f2;
+      --surface: #ffffff;
+      --ink: #1a1a18;
+      --ink-muted: #6b6b67;
+      --ink-faint: #b0aea8;
+      --accent: #c8622a;
+      --accent-light: #f0e6de;
+      --border: #e4e2dd;
+      --mono: 'DM Mono', monospace;
+      --serif: 'DM Serif Display', serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 4rem;
+      background: rgba(247,245,242,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0 4rem;
+      padding-top: 80px;
+      align-items: center;
+      gap: 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-left { padding-right: 2rem; }
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.6rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--accent);
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.8rem;
+      color: var(--ink);
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    .hero-desc {
+      font-size: 1.02rem;
+      color: var(--ink-muted);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 2.4rem;
+    }
+    .hero-cta {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.72rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--ink); }
+
+    .hero-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.6rem 1.4rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-card:nth-child(1) { grid-column: 1 / -1; background: var(--accent); color: white; }
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-card:nth-child(1) .stat-number { color: white; }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+    .stat-card:nth-child(1) .stat-label { color: rgba(255,255,255,0.7); }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 4rem; border-bottom: 1px solid var(--border); }
+    .section-header {
+      display: flex; align-items: baseline; gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+    .section-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.1em;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.1;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text p {
+      color: var(--ink-muted);
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+    .about-text p strong { color: var(--ink); }
+    .skills-block { }
+    .skill-group { margin-bottom: 1.8rem; }
+    .skill-group-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.7rem;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 0.28rem 0.7rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .exp-item:last-child { border-bottom: 1px solid var(--border); }
+    .exp-meta { }
+    .exp-company {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+    .exp-period {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+    .exp-title {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    .exp-content { }
+    .exp-intro {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+    .project-block {
+      margin-bottom: 1.8rem;
+      padding: 1.4rem 1.4rem 1.4rem 1.2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 4px 4px 0;
+    }
+    .project-name {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      line-height: 1.7;
+    }
+    .project-desc li {
+      margin-left: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .project-desc ul { list-style: none; }
+    .project-desc li::before {
+      content: '→ ';
+      color: var(--accent);
+      font-family: var(--mono);
+    }
+    .impact-pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.63rem;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.55rem;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 2px;
+      margin-top: 0.7rem;
+      margin-right: 0.3rem;
+    }
+
+    /* ── PROJECTS / PORTFOLIO ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.25s;
+      cursor: default;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+    }
+    .project-card-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: var(--accent-light);
+      position: relative;
+    }
+    .project-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top left;
+      transition: transform 0.4s ease;
+    }
+    .project-card:hover .project-card-img img {
+      transform: scale(1.03);
+    }
+    .project-card-body { padding: 1.3rem; }
+    .project-card-tag {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .project-card-title {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .project-card-desc {
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+    }
+    .footer-links { display: flex; gap: 1.8rem; }
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--ink-faint);
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 5rem 1.5rem 3rem; }
+      .hero-right { grid-template-columns: 1fr 1fr; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .exp-item { grid-template-columns: 1fr; gap: 1rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Alva Andhika Sa'id</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Data Analyst · Analytics Engineer</div>
+    <h1>Turning messy data into <em>sharp</em> decisions</h1>
+    <p class="hero-desc">
+      Data Analyst and Analytics Engineer with 4+ years of experience building end-to-end data pipelines, behavioral analytics, and decision-ready dashboards across e-commerce, government, and enterprise environments. I work best at the intersection of engineering and analysis — where clean data meets sharp business questions.
+    </p>
+    <div class="hero-cta">
+      <a href="https://www.linkedin.com/in/alvansaid/" target="_blank" class="btn btn-primary">LinkedIn ↗</a>
+      <a href="https://github.com/alvansaid" target="_blank" class="btn btn-ghost">GitHub</a>
+      <a href="mailto:alvansaid@gmail.com" class="btn btn-ghost">Email</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stat-card">
+      <div class="stat-number">4+</div>
+      <div class="stat-label">Years of experience across enterprise, gov & e-commerce</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">400M+</div>
+      <div class="stat-label">Rows processed (COVID-19 national data)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">70%</div>
+      <div class="stat-label">SLA reduction at PT. SMART Tbk</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">90%</div>
+      <div class="stat-label">Cost reduction via AI-driven market modeling (Indihome)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header fade-in">
+    <span class="section-num">01</span>
+    <h2>About</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text fade-in">
+      <p>
+        I'm a data professional who operates at the intersection of <strong>analytics engineering and business analysis</strong> — comfortable writing ETL pipelines in the morning and presenting insights to stakeholders in the afternoon.
+      </p>
+      <p>
+        My background spans <strong>government-scale public health data</strong>, <strong>agriculture e-commerce platforms</strong>, <strong>CRM analytics</strong>, <strong>ISP market intelligence</strong>, and <strong>palm oil supply chain traceability</strong>. Each context demanded a different kind of rigor, and I've developed a habit of going deep into the business before touching the data.
+      </p>
+      <p>
+        I believe the most valuable data work isn't the most complex — it's the work that people actually trust and use. That means clean pipelines, clear metric definitions, and analysis that answers the question behind the question.
+      </p>
+    </div>
+    <div class="skills-block fade-in">
+      <div class="skill-group">
+        <div class="skill-group-label">Languages & Query</div>
+        <div class="skill-tags">
+          <span class="tag">SQL</span>
+          <span class="tag">Python</span>
+          <span class="tag">R</span>
+          <span class="tag">BigQuery</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">MongoDB</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">BI & Visualization</div>
+        <div class="skill-tags">
+          <span class="tag">Looker</span>
+          <span class="tag">Looker Studio</span>
+          <span class="tag">Metabase</span>
+          <span class="tag">Tableau</span>
+          <span class="tag">GA4</span>
+          <span class="tag">Streamlit</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Engineering & Tracking</div>
+        <div class="skill-tags">
+          <span class="tag">ETL Pipelines</span>
+          <span class="tag">GTM</span>
+          <span class="tag">Folium</span>
+          <span class="tag">Funnel Analytics</span>
+          <span class="tag">RDBMS Design</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Analytics & Science</div>
+        <div class="skill-tags">
+          <span class="tag">Cohort Analysis</span>
+          <span class="tag">LTV / CAC / GMV</span>
+          <span class="tag">Retention Modeling</span>
+          <span class="tag">Fraud Detection</span>
+          <span class="tag">GIS / Geospatial</span>
+          <span class="tag">Scikit-learn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header fade-in">
+    <span class="section-num">02</span>
+    <h2>Experience</h2>
+  </div>
+
+  <!-- PT. SMART -->
+  <div class="exp-item fade-in">
+    <div class="exp-meta">
+      <div class="exp-company">PT. SMART Tbk</div>
+      <div class="exp-period">Apr 2025 – Present</div>
+      <div class="exp-title">Data Analyst · Analytics Engineer</div>
+    </div>
+    <div class="exp-content">
+      <p class="exp-intro">Traceability and Verification Officer — embedded analytics lead for palm oil supply chain data across 500+ mills.</p>
+      <div class="project-block">
+        <div class="project-name">Traceability Data Engineering</div>
+        <ul class="project-desc">
+          <li>Migrated legacy Excel-based reporting to a structured RDBMS model, improving scalability and data reliability</li>
+          <li>Redesigned end-to-end data workflow for 500+ mills quarterly — standardizing fragmented data and eliminating silos</li>
+          <li>Standardized granular address data to village level across Indonesia, harmonizing multiple coordinate formats to decimal degrees using fuzzy matching and semantic search</li>
+          <li>Built GIS-backed deforestation evidence reports with Folium and Streamlit, presented to auditors for NDPE-IRF compliance (POCG layer analysis)</li>
+        </ul>
+        <span class="impact-pill">↓ SLA 10 days → 3 days (70%)</span>
+        <span class="impact-pill">↓ SLA 20 days → 5 days (geospatial)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telkom -->
+  <div class="exp-item fade-in">
+    <div class="exp-meta">
+      <div class="exp-company">PT. Telkom Indonesia</div>
+      <div class="exp-period">Oct 2021 – Mar 2025</div>
+      <div class="exp-title">Data Analyst · Analytics Engineer</div>
+    </div>
+    <div class="exp-content">
+      <p class="exp-intro">Served across four distinct data functions within Telkom's ecosystem — spanning government-scale public health data, e-commerce analytics engineering, CRM platform analytics, and ISP market intelligence — acting as an embedded analytics lead for each product team.</p>
+
+      <div class="project-block">
+        <div class="project-name">AgreeMart — Agriculture E-Commerce Analytics</div>
+        <ul class="project-desc">
+          <li>Built and maintained BigQuery pipelines and GTM event tracking to support end-to-end funnel analytics across web and app platforms</li>
+          <li>Conducted cohort analysis, retention and churn modeling, and CAC / LTV / GMV tracking to inform product, marketing, and promotional strategy</li>
+          <li>Detected fraudulent merchant behavior through transaction pattern analysis, improving promotional integrity and protecting platform revenue</li>
+          <li>Designed full-stack analytics dashboards: transaction performance, buyer KPIs, seller KPIs, product explorer, retention cohorts, and conversion funnel</li>
+          <li>Identified traffic decline root causes through funnel analysis and led GTM event tracking implementation to restore user journey visibility</li>
+        </ul>
+        <span class="impact-pill">BigQuery · GTM · Looker Studio · Cohort & LTV</span>
+      </div>
+
+      <div class="project-block">
+        <div class="project-name">OCA Indonesia — CRM & Messaging Platform</div>
+        <ul class="project-desc">
+          <li>Automated data ingestion from MongoDB to PostgreSQL, improving reporting efficiency and data accessibility</li>
+          <li>Designed Metabase dashboards for agent performance, ticket sources, and assignment effectiveness</li>
+          <li>Analyzed OCA Blast message delivery — evaluating third-party WhatsApp providers by delivery time, success rate, and delay metrics</li>
+          <li>Enhanced user journey analysis for OCA Homepage using GA4 and Looker Studio, identifying friction points and broken flows</li>
+        </ul>
+        <span class="impact-pill">MongoDB → PostgreSQL · Metabase · GA4 · Looker</span>
+      </div>
+
+      <div class="project-block">
+        <div class="project-name">Satu Data Vaksinasi COVID-19 — Government Project</div>
+        <ul class="project-desc">
+          <li>Delivered descriptive analytics on 400M+ records supporting national public health dashboards and policy decisions</li>
+          <li>Built models to characterize populations more likely to receive COVID-19 booster vaccinations from demographic and behavioral data</li>
+          <li>Enhanced ETL pipelines, reducing processing time from 4 hours to 2 hours for data lake → data mart movement</li>
+          <li>Identified and analyzed anomalies in vaccination data to support resolution of operational and reporting issues</li>
+        </ul>
+        <span class="impact-pill">400M+ rows</span>
+        <span class="impact-pill">↓ ETL 4hr → 2hr</span>
+      </div>
+
+      <div class="project-block">
+        <div class="project-name">Indihome — ISP Market Intelligence</div>
+        <ul class="project-desc">
+          <li>Modeled market potential from house survey data using AI and statistical modeling — mapping buying intention, geolocation, price range, and wifi vs modem preference</li>
+          <li>Outputs used directly by field sales teams to prioritize customer acquisition</li>
+        </ul>
+        <span class="impact-pill">↓ Survey cost 90%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header fade-in">
+    <span class="section-num">03</span>
+    <h2>Featured Work — AgreeMart Dashboards</h2>
+  </div>
+  <p style="color: var(--ink-muted); margin-bottom: 2.5rem; max-width: 580px;" class="fade-in">
+    A full analytics suite built for AgreeMart, Telkom's agriculture B2B e-commerce platform. Dashboards were designed in Looker Studio on BigQuery, covering the full commercial lifecycle from registration through retention.
+  </p>
+  <div class="projects-grid">
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2233.png" alt="Transaction Performance Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">E-Commerce · GMV · Revenue</div>
+        <div class="project-card-title">Transaction Performance</div>
+        <p class="project-card-desc">Top-level GMV, revenue, take rate, and daily/monthly order trends — the command center for product managers tracking overall platform health.</p>
+      </div>
+    </div>
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2232.png" alt="Buyer Performance Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">LTV · CAC · Match Rate</div>
+        <div class="project-card-title">Buyer Performance</div>
+        <p class="project-card-desc">Registered vs active buyers, match rate trends, LTV distribution, and top buyer GMV contribution — identifying which buyer cohorts drive the most value.</p>
+      </div>
+    </div>
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2231.png" alt="Seller Performance Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">Supplier · Activation · GMV</div>
+        <div class="project-card-title">Seller Performance</div>
+        <p class="project-card-desc">Seller registration to activation conversion, match rate, and top seller rankings — enabling segmented seller strategy based on GMV and order contribution.</p>
+      </div>
+    </div>
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2230.png" alt="Product Performance Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">Product · Catalog · Matching</div>
+        <div class="project-card-title">Product Explorer</div>
+        <p class="project-card-desc">Active product rate, top products by GMV/quantity/orders, and time-to-match — answering which products the market actually wants and how fast they move.</p>
+      </div>
+    </div>
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2229.png" alt="Retention Performance Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">Retention · Cohort · Churn</div>
+        <div class="project-card-title">Retention Performance</div>
+        <p class="project-card-desc">30-day rolling retention, monthly retention trend, and cohort retention table by first order date — tracking when buyers stop returning and where to intervene.</p>
+      </div>
+    </div>
+    <div class="project-card fade-in">
+      <div class="project-card-img">
+        <img src="IMG_2228.png" alt="Transaction Stages Funnel Dashboard" />
+      </div>
+      <div class="project-card-body">
+        <div class="project-card-tag">Funnel · Conversion · UX</div>
+        <div class="project-card-title">Transaction Stages Funnel</div>
+        <p class="project-card-desc">Checkout-to-completion funnel across Non-Termin, RFQ, and Invoice flows — pinpointing which stage loses the most buyers and how long each conversion takes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-bottom: none;">
+  <div class="section-header fade-in">
+    <span class="section-num">04</span>
+    <h2>Let's talk</h2>
+  </div>
+  <div style="max-width: 520px;" class="fade-in">
+    <p style="color: var(--ink-muted); line-height: 1.8; margin-bottom: 2rem; font-size: 1rem;">
+      Open to data analyst, analytics engineer, and data scientist roles. I'm especially interested in product-led companies where data is treated as infrastructure, not an afterthought.
+    </p>
+    <div class="hero-cta">
+      <a href="mailto:alvansaid@gmail.com" class="btn btn-primary">alvansaid@gmail.com</a>
+      <a href="https://www.linkedin.com/in/alvansaid/" target="_blank" class="btn btn-ghost">LinkedIn ↗</a>
+      <a href="https://github.com/alvansaid" target="_blank" class="btn btn-ghost">GitHub ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">Alva Andhika Sa'id</span>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+  </div>
+  <span class="footer-copy">alvansaid.github.io</span>
+</footer>
+
+<script>
+  // Scroll fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
